@@ -5,7 +5,7 @@ struct InstructionView: View {
     @Environment(\.colorScheme) var colorScheme
     @Binding var expression: String
     @Binding var postfixElements: [String]
-    @Binding var isInfix: Bool
+    var isInfix: Bool
 
     var body: some View {
         ZStack {
@@ -21,19 +21,14 @@ struct InstructionView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("支持的功能：")
                             .font(.headline)
-                            .onTapGesture {
-                                if expression.isEmpty && postfixElements.isEmpty {
-                                    generateRandomExpression()
-                                }
-                            }
 
-                        Text(" - 函数：\\sin_真数、\\cos_真数、\\tan_真数、\\log_底数_真数")
+                        Text(" - 函数：\\sin_{真数}、\\cos_{真数}、\\tan_{真数}、\\log_{底数}_{真数}")
 
                         Text("中缀表达式输入示例：")
                             .font(.headline)
                             .padding(.top)
-                        Text(" - 3 + \\sin_2")
-                        Text(" - \\log_2_8")
+                        Text(" - 3 + \\sin_{2}")
+                        Text(" - \\log_{2}_{8}")
                         Text(" - (\\pi * 2)")
                         Text(" - 4 + 3!")
                         Text(" - \\ANS * 2")
@@ -89,28 +84,20 @@ struct InstructionView: View {
                 .padding(.horizontal, 5)
         }
     }
+}
 
-    func generateRandomExpression() {
-        let functions = ["\\sin", "\\cos", "\\tan", "\\log"]
-        let numbers = ["2", "3", "4", "5", "6", "7", "\\pi", "\\e"]
-        let operators = ["+", "-", "*", "/"]
-        let randomFunction = functions.randomElement()!
-        let randomNumber1 = numbers.randomElement()!
-        let randomNumber2 = numbers.randomElement()!
-        let randomOperator = operators.randomElement()!
-        _ = ["(", randomNumber1, randomOperator, "\(randomFunction)_\(randomNumber2)", ")"]
-        if isInfix {
-            if randomFunction == "\\log" {
-                expression = "(\(randomNumber1)\(randomOperator)\(randomFunction)_\(randomNumber2)_\(numbers.randomElement()!))"
-            } else {
-                expression = "(\(randomNumber1)\(randomOperator)\(randomFunction)_\(randomNumber2))"
-            }
-        } else {
-            if randomFunction == "\\log" {
-                postfixElements = [randomNumber1, "\(randomFunction)_\(randomNumber2)_\(numbers.randomElement()!)", randomOperator]
-            } else {
-                postfixElements = [randomNumber1, "\(randomFunction)_\(randomNumber2)", randomOperator]
-            }
-        }
+struct CustomButtonStyle: ButtonStyle {
+    @Environment(\.colorScheme) var colorScheme
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(colorScheme == .dark ? Color.black.opacity(configuration.isPressed ? 0.2 : 0.3) : Color.white.opacity(configuration.isPressed ? 0.6 : 0.7))
+            )
+            .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
     }
 }
